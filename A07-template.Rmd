@@ -200,11 +200,32 @@ My observations here are that there is not much difference in which minute of th
 Group the bike rentals by three variables: hour of the day, day of the week, and client type. Find the total number of events in each grouping and plot this count versus hour. Use the group aesthetic to represent one of the other variables and faceting to represent the other. Comment on any general trends you see.
 
 ```{r}
-### My Code here
+# Grouping and summarizing the data
+summary_data <- Trips %>%
+  group_by(hour_of_day, day_of_week, client) %>%
+  summarize(count = n()) %>%
+  ungroup()
+
+# Ploting the data
+ggplot(summary_data, aes(x = hour_of_day, y = count, color = client, group = client)) +
+  geom_line() +
+  facet_wrap(~ day_of_week, scales = "free_y") +
+  labs(title = "Bike Rentals by Hour of the Day, Day of the Week, and Client Type",
+       x = "Hour of the Day",
+       y = "Count of Rentals",
+       color = "Client Type") +
+  theme_minimal()
 
 ```
 
-My comments here.....
+My comments here are:
+
+By hour of the day : There are clear peaks in bike rentals during the morning (around 8-9 AM) and evening (around 5-6 PM) hours, which align with typical commuting times.
+
+By day of the week : Weekday patterns (Monday to Friday) show strong peaks during commute hours and 
+Weekend patterns (Saturday and Sunday) are more evenly distributed throughout the day, with fewer sharp peaks, indicating more casual use.
+
+By client type comparison : Regular users/members show more pronounced peaks during commuting hours, indicating a higher usage for daily commutes whereas casual users have a more even distribution, with slightly higher usage during weekends and off-peak hours, suggesting more recreational/casual use.
 
 
 ## Question 4: How Far? 
@@ -214,6 +235,7 @@ Our goal is to find the distance between each pair of stations. You know the pos
 
 ```{r}
 source("https://mdbeckman.github.io/dcSupplement/R/haversine.R")
+
 ```
 
 
@@ -263,7 +285,34 @@ Our goal here is to recreate [Figure 18.5](https://dtkaplan.github.io/DataComput
 
 
 ```{r}
-### My code here
+# Joining with Trips to calculate start-to-end distance of each trip
+TripsDistances <- Trips %>%
+  inner_join(PairDistances, by = c("sstation" = "sstation", "estation" = "estation"))
+
+# Ploting distribution of ride distances
+ggplot(TripsDistances, aes(x = distance)) +
+  geom_density(fill = "blue", alpha = 0.5) +
+  labs(title = "Distribution of Ride Distances",
+       x = "Distance (km)",
+       y = "Density") +
+  theme_minimal()
+
+# Ploting distribution of distances between station pairs
+ggplot(PairDistances, aes(x = distance)) +
+  geom_density(fill = "red", alpha = 0.5) +
+  labs(title = "Distribution of Distances Between Station Pairs",
+       x = "Distance (km)",
+       y = "Density") +
+  theme_minimal()
+
+# Overlaying the two density plots
+ggplot() +
+  geom_density(data = TripsDistances, aes(x = distance), fill = "blue", alpha = 0.5) +
+  geom_density(data = PairDistances, aes(x = distance), fill = "red", alpha = 0.5) +
+  labs(title = "Comparison of Ride Distances and Station Pair Distances",
+       x = "Distance (km)",
+       y = "Density") +
+  theme_minimal()
 
 ```
 
