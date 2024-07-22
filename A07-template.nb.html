@@ -9,10 +9,10 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="YOUR NAME" />
+<meta name="author" content="Arnav Bedi" />
 
 
-<title>A07- ggplot</title>
+<title>A06- ggplot</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1512,7 +1512,7 @@ window.initializeCodeFolding = function(show) {
     $(this).detach().appendTo(div);
 
     // add a show code button right above
-    var showCodeText = $('<span>' + (showThis ? 'Hide' : 'Code') + '</span>');
+    var showCodeText = $('<span>' + (showThis ? 'Hide' : 'Show') + '</span>');
     var showCodeButton = $('<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm code-folding-btn pull-right float-right"></button>');
     showCodeButton.append(showCodeText);
     showCodeButton
@@ -1538,7 +1538,7 @@ window.initializeCodeFolding = function(show) {
     //   * Change text
     //   * add a class for intermediate states styling
     div.on('hide.bs.collapse', function () {
-      showCodeText.text('Code');
+      showCodeText.text('Show');
       showCodeButton.addClass('btn-collapsing');
     });
     div.on('hidden.bs.collapse', function () {
@@ -1747,9 +1747,9 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">A07- ggplot</h1>
-<h4 class="author">YOUR NAME</h4>
-<h4 class="date">DATE</h4>
+<h1 class="title toc-ignore">A06- ggplot</h1>
+<h4 class="author">Arnav Bedi</h4>
+<h4 class="date">7/22/2024</h4>
 
 </div>
 
@@ -1788,218 +1788,312 @@ quarterly data, giving the rental history over the last quarter of 2014
 </ul>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5cbnN0YXRpb25fdXJsIDwtIFwiaHR0cHM6Ly9tZGJlY2ttYW4uZ2l0aHViLmlvL2RjU3VwcGxlbWVudC9kYXRhL0RDLVN0YXRpb25zLmNzdlwiXG5TdGF0aW9ucyA8LSByZWFkcjo6cmVhZF9jc3Yoc3RhdGlvbl91cmwpXG4gICAgXG50cmlwX3VybCA8LSBcImh0dHBzOi8vbWRiZWNrbWFuLmdpdGh1Yi5pby9kY1N1cHBsZW1lbnQvZGF0YS9Ucmlwcy1IaXN0b3J5LURhdGEtMjAxNC1RNC1TbWFsbC5yZHNcIlxuVHJpcHMgPC0gcmVhZFJEUyhnemNvbih1cmwodHJpcF91cmwpKSlcbmBgYCJ9 -->
-<pre class="r"><code>library(tidyverse)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxubGlicmFyeSh0aWR5dmVyc2UpXG5cbnN0YXRpb25fdXJsIDwtIFxcaHR0cHM6Ly9tZGJlY2ttYW4uZ2l0aHViLmlvL2RjU3VwcGxlbWVudC9kYXRhL0RDLVN0YXRpb25zLmNzdlxcXG5TdGF0aW9ucyA8LSByZWFkcjo6cmVhZF9jc3Yoc3RhdGlvbl91cmwpXG4gICAgXG50cmlwX3VybCA8LSBcXGh0dHBzOi8vbWRiZWNrbWFuLmdpdGh1Yi5pby9kY1N1cHBsZW1lbnQvZGF0YS9Ucmlwcy1IaXN0b3J5LURhdGEtMjAxNC1RNC1TbWFsbC5yZHNcXFxuVHJpcHMgPC0gcmVhZFJEUyhnemNvbih1cmwodHJpcF91cmwpKSlcbmBgYFxuYGBgIn0= -->
+<pre class="r"><code>```r
+library(tidyverse)
 
-station_url &lt;- &quot;https://mdbeckman.github.io/dcSupplement/data/DC-Stations.csv&quot;
+station_url &lt;- \https://mdbeckman.github.io/dcSupplement/data/DC-Stations.csv\
 Stations &lt;- readr::read_csv(station_url)
     
-trip_url &lt;- &quot;https://mdbeckman.github.io/dcSupplement/data/Trips-History-Data-2014-Q4-Small.rds&quot;
+trip_url &lt;- \https://mdbeckman.github.io/dcSupplement/data/Trips-History-Data-2014-Q4-Small.rds\
 Trips &lt;- readRDS(gzcon(url(trip_url)))</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>In this activity, you’ll work with just a few variables:</p>
-<p>From <code>Stations</code>:</p>
-<ul>
-<li>the latitude (<code>lat</code>) and longitude (<code>long</code>) of
-the bicycle rental station</li>
-<li><code>name</code>: the station’s name</li>
-</ul>
-<p>From Trips:</p>
-<ul>
-<li><code>sstation</code>: the name of the station where the bicycle was
-checked out.</li>
-<li><code>estation</code>: the name of the station to which the bicycle
-was returned.</li>
-<li><code>client</code>: indicates whether the customer is a “regular”
-user who has paid a yearly membership fee, or a “casual” user who has
-paid a fee for five-day membership.</li>
-<li><code>sdate</code>: the time and date of check-out</li>
-<li><code>edate</code>: the time and date of return</li>
-</ul>
-<p>(Notice that the location and time variables start with an “s” or an
-“e” to indicate whether the variable is about the <strong>s</strong>tart
-of a trip or the <strong>e</strong>nd of a trip.)</p>
-<p>Time/dates are typically stored as a special kind of number: a
-<strong>POSIX</strong> date.</p>
-<p><strong>POSIX</strong> date: A representation of date and time of day
-that facilitates using dates in the same way as numbers, e.g. to find
-the time elapsed between two dates. You can use <code>sdate</code> and
-<code>edate</code> in the same way that you would use a number. For
-instance, the figure below shows the distribution of times that bikes
-were checked out.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuVHJpcHMgJT4lXG4gIGdncGxvdChhZXMoeCA9IHNkYXRlKSkgK1xuICBnZW9tX2RlbnNpdHkoZmlsbCA9IFwiZ3JheVwiLCBjb2xvciA9IE5BKVxuYGBgIn0= -->
-<pre class="r"><code>Trips %&gt;%
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+In this activity, you’ll work with just a few variables:
+
+From `Stations`:
+
+- the latitude (`lat`) and longitude (`long`) of the bicycle rental station
+- `name`: the station’s name
+
+
+From Trips: 
+
+- `sstation`: the name of the station where the bicycle was checked out.
+- `estation`: the name of the station to which the bicycle was returned.
+- `client`: indicates whether the customer is a &quot;regular&quot; user who has paid a yearly membership fee, or a &quot;casual&quot; user who has paid a fee for five-day membership.
+- `sdate`: the time and date of check-out
+- `edate`: the time and date of return
+
+(Notice that the location and time variables start with an “s” or an “e” to indicate whether the variable is about the **s**tart of a trip or the **e**nd of a trip.)
+
+
+Time/dates are typically stored as a special kind of number: a **POSIX** date. 
+
+**POSIX** date: A representation of date and time of day that facilitates using dates in the same way as numbers, e.g. to find the time elapsed between two dates. You can use `sdate` and `edate` in the same way that you would use a number. For instance, the figure below shows the distribution of times that bikes were checked out.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuVHJpcHMgJT4lXG4gIGdncGxvdChhZXMoeCA9IHNkYXRlKSkgK1xuICBnZW9tX2RlbnNpdHkoZmlsbCA9IFxcZ3JheVxcLCBjb2xvciA9IE5BKVxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+Trips %&gt;%
   ggplot(aes(x = sdate)) +
-  geom_density(fill = &quot;gray&quot;, color = NA)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="question-1-how-long" class="section level2">
-<h2>Question 1: How Long?</h2>
-<p>Make a box-and-whisker plot, like Figure <a href="https://dtkaplan.github.io/DataComputingEbook/project-bicycle-sharing.html#fig:box-whisker-bike">18.2
-of the Project: Bicycle Sharing</a> showing the distribution of the
-duration of rental events, broken down by the client type. The duration
-of the rental can be calculated as
-<code>as.numeric(edate - sdate)</code>. The units will be in either
-hours, minutes, or seconds. It should not be much trouble for you to
-figure out which one.</p>
-<p>When you make your plot, you will likely find that the axis range is
-being set by a few outliers. These may be bikes that were forgotten.
-Arrange your scale to ignore these outliers, or filter them out.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMjIFlvdXIgY29kZSBoZXJlXG5cblxuYGBgIn0= -->
-<pre class="r"><code>### Your code here
+  geom_density(fill = \gray\, color = NA)</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+## Question 1: How Long?  
+
+Make a box-and-whisker Plot, like Figure [18.2 of the Project: Bicycle Sharing](https://dtkaplan.github.io/DataComputingEbook/project-bicycle-sharing.html#fig:box-whisker-bike) showing the distribution of the duration of rental events, broken down by the client type. The duration of the rental can be calculated as `as.numeric(edate - sdate)`. The units will be in either hours, minutes, or seconds. It should not be much trouble for you to figure out which one.
+
+When you make your plot, you will likely find that the axis range is being set by a few outliers. These may be bikes that were forgotten. Arrange your scale to ignore these outliers, or filter them out.
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyMjIFlvdXIgY29kZSBoZXJlXG5cblxuYGBgXG5gYGAifQ== --&gt;
+
+```r
+```r
+### Your code here
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-</div>
-<div id="question-2-when-are-bikes-used" class="section level2">
-<h2>Question 2: When are bikes used?</h2>
-<p>The <code>sdate</code> variable in Trips indicates the date and time
-of day that the bicycle was checked out of the parking station.
-<code>sdate</code> is stored as a special variable type that includes
-detailed information about the date and time.</p>
-<p>Often, you will want discrete components of a date, for instance:</p>
-<table>
-<colgroup>
-<col width="57%" />
-<col width="42%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Date Component</th>
-<th>Function (<code>lubridate</code> package)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Day of the year (1-365)</td>
-<td><code>lubridate::yday(sdate)</code></td>
-</tr>
-<tr class="even">
-<td>Day of the week (Sunday to Saturday)</td>
-<td><code>lubridate::wday(sdate)</code></td>
-</tr>
-<tr class="odd">
-<td>Hour of the day</td>
-<td><code>lubridate::hour(sdate)</code></td>
-</tr>
-<tr class="even">
-<td>Minute in the hour</td>
-<td><code>lubridate::minute(sdate)</code></td>
-</tr>
-</tbody>
-</table>
-<p>Create <strong>histograms or density plots</strong> for bike use over
-the following discrete time periods. For each plot, provide 2-3
-sentences describing your observations.</p>
-<ol style="list-style-type: decimal">
-<li>day of the year (1 to 365)</li>
-<li>day of the week (Sunday to Saturday)</li>
-<li>hour of the day (0 to 24)</li>
-<li>minute in the hour (0 to 60)</li>
-</ol>
-<p>You can use <a href="https://dtkaplan.github.io/DataComputingEbook/project-bicycle-sharing.html#fig:bikes-over-hours">Figure
-18.3</a> or <a href="https://dtkaplan.github.io/DataComputingEbook/project-bicycle-sharing.html#fig:bike-hour-count">Figure
-18.4</a> as examples.</p>
-<div id="day-of-year" class="section level3">
-<h3>Day of Year</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMjIFlvdXIgQ29kZSBIZXJlXG5cbmBgYCJ9 -->
-<pre class="r"><code>### Your Code Here
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+## Question 2: When are bikes used?
+
+The `sdate` variable in Trips indicates the date and time of day that the bicycle was checked out of the parking station. `sdate` is stored as a special variable type that includes detailed information about the date and time. 
+
+Often, you will want discrete components of a date, for instance:
+
+
+
+|Date Component                         |   Function (`lubridate` package)|
+|---------------------------------------|-----------------------------|
+| Day of the year (1-365)               | `lubridate::yday(sdate)`    | 
+| Day of the week (Sunday to Saturday)  | `lubridate::wday(sdate)`    | 
+| Hour of the day                           | `lubridate::hour(sdate)`    | 
+| Minute in the hour                      | `lubridate::minute(sdate)`  | 
+
+Create **histograms or density plots** for bike use over the following discrete time periods. For each plot, provide 2-3 sentences describing your observations. 
+
+1. day of the year (1 to 365)
+2.  day of the week (Sunday to Saturday)
+3.  hour of the day (0 to 24)
+4.  minute in the hour (0 to 60)
+
+You can use [Figure 18.3](https://dtkaplan.github.io/DataComputingEbook/project-bicycle-sharing.html#fig:bikes-over-hours) or [Figure 18.4](https://dtkaplan.github.io/DataComputingEbook/project-bicycle-sharing.html#fig:bike-hour-count) as examples.
+
+
+### Day of Year
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyMjIFlvdXIgQ29kZSBIZXJlXG5cbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+### Your Code Here
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>My observations here…..</p>
-</div>
-<div id="day-of-week" class="section level3">
-<h3>Day of Week</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMjIFlvdXIgQ29kZSBIZXJlXG5cbmBgYCJ9 -->
-<pre class="r"><code>### Your Code Here
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+My observations here..... 
+
+
+### Day of Week
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyMjIFlvdXIgQ29kZSBIZXJlXG5cbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+### Your Code Here
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>My observations here…..</p>
-</div>
-<div id="hour-of-day" class="section level3">
-<h3>Hour of Day</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMjIFlvdXIgQ29kZSBIZXJlXG5cbmBgYCJ9 -->
-<pre class="r"><code>### Your Code Here
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+My observations here..... 
+
+
+
+### Hour of Day
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyMjIFlvdXIgQ29kZSBIZXJlXG5cbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+### Your Code Here
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>My observations here…..</p>
-</div>
-<div id="minute-of-hour" class="section level3">
-<h3>Minute of Hour</h3>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMjIFlvdXIgQ29kZSBIZXJlXG5cbmBgYCJ9 -->
-<pre class="r"><code>### Your Code Here
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+My observations here..... 
+
+
+
+### Minute of Hour
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyMjIFlvdXIgQ29kZSBIZXJlXG5cbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+### Your Code Here
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>My observations here…..</p>
-</div>
-</div>
-<div id="question-3-grouping" class="section level2">
-<h2>Question 3: Grouping</h2>
-<p>Group the bike rentals by three variables: hour of the day, day of
-the week, and client type. Find the total number of events in each
-grouping and plot this count versus hour. Use the group aesthetic to
-represent one of the other variables and faceting to represent the
-other. Comment on any general trends you see.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMjIE15IENvZGUgaGVyZVxuXG5gYGAifQ== -->
-<pre class="r"><code>### My Code here
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+My observations here..... 
+
+
+## Question 3: Grouping
+
+Group the bike rentals by three variables: hour of the day, day of the week, and client type. Find the total number of events in each grouping and plot this count versus hour. Use the group aesthetic to represent one of the other variables and faceting to represent the other. Comment on any general trends you see.
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyMjIE15IENvZGUgaGVyZVxuXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+### My Code here
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>My comments here…..</p>
-</div>
-<div id="question-4-how-far" class="section level2">
-<h2>Question 4: How Far?</h2>
-<p>Our goal is to find the distance between each pair of stations. You
-know the position from the lat and long variables in
-<code>Stations</code>. This is enough information to find the distance.
-The calculation has been implemented in the <code>haversine()</code>
-function. We can import the <code>haversine()</code> function using the
-following command.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc291cmNlKFwiaHR0cHM6Ly9tZGJlY2ttYW4uZ2l0aHViLmlvL2RjU3VwcGxlbWVudC9SL2hhdmVyc2luZS5SXCIpXG5gYGAifQ== -->
-<pre class="r"><code>source(&quot;https://mdbeckman.github.io/dcSupplement/R/haversine.R&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p><code>haversine()</code> is a transformation function. To use it,
-create a data table where a case is a pair of stations and there are
-variables for the latitude and longitude of the starting station and the
-ending station. To do this, join the Station data to itself. The
-following statements show how to create appropriately named variables
-for joining.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuU2ltcGxlIDwtXG4gIFN0YXRpb25zICU+JVxuICBzZWxlY3QobmFtZSwgbGF0LCBsb25nKSAlPiVcbiAgcmVuYW1lKHNzdGF0aW9uID0gbmFtZSlcblxuU2ltcGxlMiA8LVxuICBTaW1wbGUgJT4lXG4gIHJlbmFtZShlc3RhdGlvbiA9IHNzdGF0aW9uLCBsYXQyID0gbGF0LCBsb25nMiA9IGxvbmcpXG5cbmBgYCJ9 -->
-<pre class="r"><code>Simple &lt;-
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+My comments here.....
+
+
+## Question 4: How Far? 
+
+
+Our goal is to find the distance between each pair of stations. You know the position from the lat and long variables in `Stations`. This is enough information to find the distance. The calculation has been implemented in the `haversine()` function. We can import the `haversine()` function using the following command. 
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuc291cmNlKFxcaHR0cHM6Ly9tZGJlY2ttYW4uZ2l0aHViLmlvL2RjU3VwcGxlbWVudC9SL2hhdmVyc2luZS5SXFwpXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+source(\https://mdbeckman.github.io/dcSupplement/R/haversine.R\)</code></pre>
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+`haversine()` is a transformation function. To use it, create a data table where a case is a pair of stations and there are variables for the latitude and longitude of the starting station and the ending station. To do this, join the Station data to itself. The following statements show how to create appropriately named variables for joining.
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuU2ltcGxlIDwtXG4gIFN0YXRpb25zICU+JVxuICBzZWxlY3QobmFtZSwgbGF0LCBsb25nKSAlPiVcbiAgcmVuYW1lKHNzdGF0aW9uID0gbmFtZSlcblxuU2ltcGxlMiA8LVxuICBTaW1wbGUgJT4lXG4gIHJlbmFtZShlc3RhdGlvbiA9IHNzdGF0aW9uLCBsYXQyID0gbGF0LCBsb25nMiA9IGxvbmcpXG5cbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+Simple &lt;-
   Stations %&gt;%
   select(name, lat, long) %&gt;%
   rename(sstation = name)
@@ -2008,26 +2102,36 @@ Simple2 &lt;-
   Simple %&gt;%
   rename(estation = sstation, lat2 = lat, long2 = long)
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Look at the <code>head()</code> of <code>Simple</code> and
-<code>Simple2</code> and make sure you understand how they are related
-to <code>Stations.</code></p>
-<p>The joining of <code>Simple</code> and <code>Simple2</code> should
-match every station to every other station. Since a ride can start and
-end at the same station, it also makes sense to match each station to
-itself. This sort of matching does not make use of any matching
-variables; everything is matched to everything else. This is called a
-<strong>full outer join</strong>. See Lecture L09 to read more about
-joins. Note, we can also use the <code>merge()</code> function for full
-outer joins. See the help file for more details.</p>
-<p>We perform the full outer join and then use <code>haversine()</code>
-to compute the distance between each pair of stations.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI2Z1bGwgb3V0ZXIgam9pblxuU3RhdGlvblBhaXJzIDwtIG1lcmdlKFNpbXBsZSwgU2ltcGxlMiwgYnkgPSBOVUxMKVxuXG4jY2FsY3VsYXRpbmcgZGlzdGFuY2VzXG5QYWlyRGlzdGFuY2VzIDwtXG4gIFN0YXRpb25QYWlycyAlPiVcbiAgbXV0YXRlKGRpc3RhbmNlID0gaGF2ZXJzaW5lKGxhdCwgbG9uZywgbGF0MiwgbG9uZzIpKSAlPiVcbiAgc2VsZWN0KHNzdGF0aW9uLCBlc3RhdGlvbiwgZGlzdGFuY2UpXG5cbmBgYCJ9 -->
-<pre class="r"><code>#full outer join
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+Look at the `head()` of `Simple` and `Simple2` and make sure you understand how they are related to `Stations.`
+
+
+The joining of `Simple` and `Simple2` should match every station to every other station. Since a ride can start and end at the same station, it also makes sense to match each station to itself. This sort of matching does not make use of any matching variables; everything is matched to everything else. This is called a **full outer join**. See Lecture L09 to read more about joins. Note, we can also use the `merge()` function for full outer joins. See the help file for more details.  
+
+
+We perform the full outer join and then use `haversine()` to compute the distance between each pair of stations.
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuI2Z1bGwgb3V0ZXIgam9pblxuU3RhdGlvblBhaXJzIDwtIG1lcmdlKFNpbXBsZSwgU2ltcGxlMiwgYnkgPSBOVUxMKVxuXG4jY2FsY3VsYXRpbmcgZGlzdGFuY2VzXG5QYWlyRGlzdGFuY2VzIDwtXG4gIFN0YXRpb25QYWlycyAlPiVcbiAgbXV0YXRlKGRpc3RhbmNlID0gaGF2ZXJzaW5lKGxhdCwgbG9uZywgbGF0MiwgbG9uZzIpKSAlPiVcbiAgc2VsZWN0KHNzdGF0aW9uLCBlc3RhdGlvbiwgZGlzdGFuY2UpXG5cbmBgYFxuYGBgIn0= --&gt;
+
+```r
+```r
+#full outer join
 StationPairs &lt;- merge(Simple, Simple2, by = NULL)
 
 #calculating distances
@@ -2036,25 +2140,38 @@ PairDistances &lt;-
   mutate(distance = haversine(lat, long, lat2, long2)) %&gt;%
   select(sstation, estation, distance)
 </code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-chunk-end -->
-<!-- rnb-text-begin -->
-<p>Once you have <code>PairDistances</code>, you can join it with
-<code>Trips</code> to calculate the start-to-end distance of each trip.
-An <code>inner_join()</code> is appropriate for finding the distance of
-each ride.</p>
-<p>Display the distribution of the ride distances of the rides. Compare
-it to the distances between pairs of stations. Are they similar? Why or
-why not?</p>
-<p>Our goal here is to recreate <a href="https://dtkaplan.github.io/DataComputingEbook/project-bicycle-sharing.html#fig:bike-hour-count">Figure
-18.5</a>. For this assignment, it is sufficient to make each density on
-its own plot. There is 1 point of extra credit if you can make the two
-densities on the same plot.</p>
-<!-- rnb-text-end -->
-<!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyMjIE15IGNvZGUgaGVyZVxuXG5gYGAifQ== -->
-<pre class="r"><code>### My code here
+<pre><code>
+&lt;!-- rnb-source-end --&gt;
+
+&lt;!-- rnb-chunk-end --&gt;
+
+
+&lt;!-- rnb-text-begin --&gt;
+
+
+
+Once you have `PairDistances`, you can join it with `Trips` to calculate the start-to-end distance of each trip. An `inner_join()` is appropriate for finding the distance of each ride.
+
+Display the distribution of the ride distances of the rides. Compare it to the distances between pairs of stations. Are they similar? Why or why not?
+
+Our goal here is to recreate [Figure 18.5](https://dtkaplan.github.io/DataComputingEbook/project-bicycle-sharing.html#fig:bike-hour-count). For this assignment, it is sufficient to make each density on its own plot. There is 1 point of extra credit if you can make the two densities on the same plot. 
+
+
+
+
+&lt;!-- rnb-text-end --&gt;
+
+
+&lt;!-- rnb-chunk-begin --&gt;
+
+
+&lt;!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuYGBgclxuIyMjIE15IGNvZGUgaGVyZVxuXG5gYGBcbmBgYCJ9 --&gt;
+
+```r
+```r
+### My code here
 </code></pre>
+<p>```</p>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
@@ -2068,7 +2185,7 @@ different variable names for the station.</p>
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiQTA3LSBnZ3Bsb3QiCmF1dGhvcjogIllPVVIgTkFNRSIKZGF0ZTogIkRBVEUiCm91dHB1dDogaHRtbF9ub3RlYm9vawotLS0KCiMjIEJpY3ljbGUgU2hhcmluZwoKQ2FwaXRhbCBCaWtlU2hhcmUgaXMgYSBiaWN5Y2xlLXNoYXJpbmcgc3lzdGVtIGluIFdhc2hpbmd0b24sIEQuQy4gQXQgYW55IG9mIGFib3V0IDQwMCBzdGF0aW9ucywgYSByZWdpc3RlcmVkIHVzZXIgY2FuIHVubG9jayBhbmQgY2hlY2sgb3V0IGEgYmljeWNsZS4gQWZ0ZXIgdXNlLCB0aGUgYmlrZSBjYW4gYmUgcmV0dXJuZWQgdG8gdGhlIHNhbWUgc3RhdGlvbiBvciBhbnkgb2YgdGhlIG90aGVyIHN0YXRpb25zLgoKU3VjaCBzaGFyaW5nIHN5c3RlbXMgcmVxdWlyZSBjYXJlZnVsIG1hbmFnZW1lbnQuIFRoZXJlIG5lZWQgdG8gYmUgZW5vdWdoIGJpa2VzIGF0IGVhY2ggc3RhdGlvbiB0byBzYXRpc2Z5IHRoZSBkZW1hbmQsIGFuZCBlbm91Z2ggZW1wdHkgZG9ja3MgYXQgdGhlIGRlc3RpbmF0aW9uIHN0YXRpb24gc28gdGhhdCB0aGUgYmlrZXMgY2FuIGJlIHJldHVybmVkLiBBdCBlYWNoIHN0YXRpb24sIGJpa2VzIGFyZSBjaGVja2VkIG91dCBhbmQgYXJlIHJldHVybmVkIG92ZXIgdGhlIGNvdXJzZSBvZiB0aGUgZGF5LiBBbiBpbWJhbGFuY2UgYmV0d2VlbiBiaWtlcyBjaGVja2VkIG91dCBhbmQgYmlrZXMgcmV0dXJuZWQgY2FsbHMgZm9yIHRoZSBzeXN0ZW0gYWRtaW5pc3RyYXRpb24gdG8gdHJ1Y2sgYmlrZXMgZnJvbSBvbmUgc3RhdGlvbiB0byBhbm90aGVyLiBUaGlzIGlzIGV4cGVuc2l2ZS4KCkluIG9yZGVyIHRvIG1hbmFnZSB0aGUgc3lzdGVtLCBhbmQgdG8gc3VwcG9ydCBhIHNtYXJ0LXBob25lIGFwcCBzbyB0aGF0IHVzZXJzIGNhbiBmaW5kIG91dCB3aGVuIGJpa2VzIGFyZSBhdmFpbGFibGUsIENhcGl0YWwgQmlrZVNoYXJlIGNvbGxlY3RzIHJlYWwtdGltZSBkYXRhIG9uIHdoZW4gYW5kIHdoZXJlIGVhY2ggYmlrZSBpcyBjaGVja2VkIG91dCBvciByZXR1cm5lZCwgaG93IG1hbnkgYmlrZXMgYW5kIGVtcHR5IGRvY2tzIHRoZXJlIGFyZSBhdCBlYWNoIHN0YXRpb24uIENhcGl0YWwgQmlrZVNoYXJlIHB1Ymxpc2hlcyB0aGUgc3RhdGlvbi1sZXZlbCBpbmZvcm1hdGlvbiBpbiByZWFsIHRpbWUuIFRoZSBvcmdhbml6YXRpb24gYWxzbyBwdWJsaXNoZXMsIGF0IHRoZSBlbmQgb2YgZWFjaCBxdWFydGVyIG9mIHRoZSB5ZWFyLCB0aGUgaGlzdG9yaWNhbCByZWNvcmQgb2YgZWFjaCBiaWtlIHJlbnRhbCBpbiB0aGF0IHRpbWUuCgpZb3UgY2FuIGFjY2VzcyB0aGUgZGF0YSBmcm9tIHRoZSBDYXBpdGFsIEJpa2VzaGFyZSB3ZWIgc2l0ZS4gRG9pbmcgdGhpcyByZXF1aXJlcyBzb21lIHRyYW5zbGF0aW9uIGFuZCBjbGVhbmluZywgc2tpbGxzIHRoYXQgYXJlIGludHJvZHVjZWQgaW4gQ2hhcHRlciAxNi4gRm9yIHRoaXMgcHJvamVjdCwgaG93ZXZlciwgYWxyZWFkeSB0cmFuc2xhdGVkIGFuZCBjbGVhbmVkIGRhdGEgYXJlIHByb3ZpZGVkIGluIHRoZSBmb3JtIG9mIHR3byBkYXRhIHRhYmxlczoKCi0gYFN0YXRpb25zYCBnaXZpbmcgaW5mb3JtYXRpb24gYWJvdXQgbG9jYXRpb24gb2YgZWFjaCBvZiB0aGUgc3RhdGlvbnMgaW4gdGhlIHN5c3RlbS4KLSBgVHJpcHNgIGlzIGEgcmFuZG9tIHN1YnNldCBvZiAxMCwwMDAgdHJpcHMgZnJvbSB0aGUgZnVsbCBxdWFydGVybHkgZGF0YSwgZ2l2aW5nIHRoZSByZW50YWwgaGlzdG9yeSBvdmVyIHRoZSBsYXN0IHF1YXJ0ZXIgb2YgMjAxNCAoUTQpLgoKCmBgYHtyfQpsaWJyYXJ5KHRpZHl2ZXJzZSkKCnN0YXRpb25fdXJsIDwtICJodHRwczovL21kYmVja21hbi5naXRodWIuaW8vZGNTdXBwbGVtZW50L2RhdGEvREMtU3RhdGlvbnMuY3N2IgpTdGF0aW9ucyA8LSByZWFkcjo6cmVhZF9jc3Yoc3RhdGlvbl91cmwpCiAgICAKdHJpcF91cmwgPC0gImh0dHBzOi8vbWRiZWNrbWFuLmdpdGh1Yi5pby9kY1N1cHBsZW1lbnQvZGF0YS9Ucmlwcy1IaXN0b3J5LURhdGEtMjAxNC1RNC1TbWFsbC5yZHMiClRyaXBzIDwtIHJlYWRSRFMoZ3pjb24odXJsKHRyaXBfdXJsKSkpCmBgYAoKCkluIHRoaXMgYWN0aXZpdHksIHlvdeKAmWxsIHdvcmsgd2l0aCBqdXN0IGEgZmV3IHZhcmlhYmxlczoKCkZyb20gYFN0YXRpb25zYDoKCi0gdGhlIGxhdGl0dWRlIChgbGF0YCkgYW5kIGxvbmdpdHVkZSAoYGxvbmdgKSBvZiB0aGUgYmljeWNsZSByZW50YWwgc3RhdGlvbgotIGBuYW1lYDogdGhlIHN0YXRpb27igJlzIG5hbWUKCgpGcm9tIFRyaXBzOiAKCi0gYHNzdGF0aW9uYDogdGhlIG5hbWUgb2YgdGhlIHN0YXRpb24gd2hlcmUgdGhlIGJpY3ljbGUgd2FzIGNoZWNrZWQgb3V0LgotIGBlc3RhdGlvbmA6IHRoZSBuYW1lIG9mIHRoZSBzdGF0aW9uIHRvIHdoaWNoIHRoZSBiaWN5Y2xlIHdhcyByZXR1cm5lZC4KLSBgY2xpZW50YDogaW5kaWNhdGVzIHdoZXRoZXIgdGhlIGN1c3RvbWVyIGlzIGEgInJlZ3VsYXIiIHVzZXIgd2hvIGhhcyBwYWlkIGEgeWVhcmx5IG1lbWJlcnNoaXAgZmVlLCBvciBhICJjYXN1YWwiIHVzZXIgd2hvIGhhcyBwYWlkIGEgZmVlIGZvciBmaXZlLWRheSBtZW1iZXJzaGlwLgotIGBzZGF0ZWA6IHRoZSB0aW1lIGFuZCBkYXRlIG9mIGNoZWNrLW91dAotIGBlZGF0ZWA6IHRoZSB0aW1lIGFuZCBkYXRlIG9mIHJldHVybgoKKE5vdGljZSB0aGF0IHRoZSBsb2NhdGlvbiBhbmQgdGltZSB2YXJpYWJsZXMgc3RhcnQgd2l0aCBhbiDigJxz4oCdIG9yIGFuIOKAnGXigJ0gdG8gaW5kaWNhdGUgd2hldGhlciB0aGUgdmFyaWFibGUgaXMgYWJvdXQgdGhlICoqcyoqdGFydCBvZiBhIHRyaXAgb3IgdGhlICoqZSoqbmQgb2YgYSB0cmlwLikKCgpUaW1lL2RhdGVzIGFyZSB0eXBpY2FsbHkgc3RvcmVkIGFzIGEgc3BlY2lhbCBraW5kIG9mIG51bWJlcjogYSAqKlBPU0lYKiogZGF0ZS4gCgoqKlBPU0lYKiogZGF0ZTogQSByZXByZXNlbnRhdGlvbiBvZiBkYXRlIGFuZCB0aW1lIG9mIGRheSB0aGF0IGZhY2lsaXRhdGVzIHVzaW5nIGRhdGVzIGluIHRoZSBzYW1lIHdheSBhcyBudW1iZXJzLCBlLmcuIHRvIGZpbmQgdGhlIHRpbWUgZWxhcHNlZCBiZXR3ZWVuIHR3byBkYXRlcy4gWW91IGNhbiB1c2UgYHNkYXRlYCBhbmQgYGVkYXRlYCBpbiB0aGUgc2FtZSB3YXkgdGhhdCB5b3Ugd291bGQgdXNlIGEgbnVtYmVyLiBGb3IgaW5zdGFuY2UsIHRoZSBmaWd1cmUgYmVsb3cgc2hvd3MgdGhlIGRpc3RyaWJ1dGlvbiBvZiB0aW1lcyB0aGF0IGJpa2VzIHdlcmUgY2hlY2tlZCBvdXQuCgpgYGB7cn0KVHJpcHMgJT4lCiAgZ2dwbG90KGFlcyh4ID0gc2RhdGUpKSArCiAgZ2VvbV9kZW5zaXR5KGZpbGwgPSAiZ3JheSIsIGNvbG9yID0gTkEpCmBgYAoKCiMjIFF1ZXN0aW9uIDE6IEhvdyBMb25nPyAgCgpNYWtlIGEgYm94LWFuZC13aGlza2VyIHBsb3QsIGxpa2UgRmlndXJlIFsxOC4yIG9mIHRoZSBQcm9qZWN0OiBCaWN5Y2xlIFNoYXJpbmddKGh0dHBzOi8vZHRrYXBsYW4uZ2l0aHViLmlvL0RhdGFDb21wdXRpbmdFYm9vay9wcm9qZWN0LWJpY3ljbGUtc2hhcmluZy5odG1sI2ZpZzpib3gtd2hpc2tlci1iaWtlKSBzaG93aW5nIHRoZSBkaXN0cmlidXRpb24gb2YgdGhlIGR1cmF0aW9uIG9mIHJlbnRhbCBldmVudHMsIGJyb2tlbiBkb3duIGJ5IHRoZSBjbGllbnQgdHlwZS4gVGhlIGR1cmF0aW9uIG9mIHRoZSByZW50YWwgY2FuIGJlIGNhbGN1bGF0ZWQgYXMgYGFzLm51bWVyaWMoZWRhdGUgLSBzZGF0ZSlgLiBUaGUgdW5pdHMgd2lsbCBiZSBpbiBlaXRoZXIgaG91cnMsIG1pbnV0ZXMsIG9yIHNlY29uZHMuIEl0IHNob3VsZCBub3QgYmUgbXVjaCB0cm91YmxlIGZvciB5b3UgdG8gZmlndXJlIG91dCB3aGljaCBvbmUuCgpXaGVuIHlvdSBtYWtlIHlvdXIgcGxvdCwgeW91IHdpbGwgbGlrZWx5IGZpbmQgdGhhdCB0aGUgYXhpcyByYW5nZSBpcyBiZWluZyBzZXQgYnkgYSBmZXcgb3V0bGllcnMuIFRoZXNlIG1heSBiZSBiaWtlcyB0aGF0IHdlcmUgZm9yZ290dGVuLiBBcnJhbmdlIHlvdXIgc2NhbGUgdG8gaWdub3JlIHRoZXNlIG91dGxpZXJzLCBvciBmaWx0ZXIgdGhlbSBvdXQuCgoKYGBge3J9CiMjIyBZb3VyIGNvZGUgaGVyZQoKCmBgYAoKCiMjIFF1ZXN0aW9uIDI6IFdoZW4gYXJlIGJpa2VzIHVzZWQ/CgpUaGUgYHNkYXRlYCB2YXJpYWJsZSBpbiBUcmlwcyBpbmRpY2F0ZXMgdGhlIGRhdGUgYW5kIHRpbWUgb2YgZGF5IHRoYXQgdGhlIGJpY3ljbGUgd2FzIGNoZWNrZWQgb3V0IG9mIHRoZSBwYXJraW5nIHN0YXRpb24uIGBzZGF0ZWAgaXMgc3RvcmVkIGFzIGEgc3BlY2lhbCB2YXJpYWJsZSB0eXBlIHRoYXQgaW5jbHVkZXMgZGV0YWlsZWQgaW5mb3JtYXRpb24gYWJvdXQgdGhlIGRhdGUgYW5kIHRpbWUuIAoKT2Z0ZW4sIHlvdSB3aWxsIHdhbnQgZGlzY3JldGUgY29tcG9uZW50cyBvZiBhIGRhdGUsIGZvciBpbnN0YW5jZToKCgoKfERhdGUgQ29tcG9uZW50ICAgICAgICAgICAgICAgICAgICAgICAgIHwJRnVuY3Rpb24gKGBsdWJyaWRhdGVgIHBhY2thZ2UpfAp8LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tfC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tfAp8IERheSBvZiB0aGUgeWVhciAoMS0zNjUpICAgICAgICAgICAgICAJfCBgbHVicmlkYXRlOjp5ZGF5KHNkYXRlKWAJICB8IAp8IERheSBvZiB0aGUgd2VlayAoU3VuZGF5IHRvIFNhdHVyZGF5KQl8IGBsdWJyaWRhdGU6OndkYXkoc2RhdGUpYAkgIHwgCnwgSG91ciBvZiB0aGUgZGF5CQkgICAgICAgICAgICAgICAgICAgIHwgYGx1YnJpZGF0ZTo6aG91cihzZGF0ZSlgCSAgfCAKfCBNaW51dGUgaW4gdGhlIGhvdXIJICAgICAgICAgICAgICAgICAgfCBgbHVicmlkYXRlOjptaW51dGUoc2RhdGUpYAl8IAoKQ3JlYXRlICoqaGlzdG9ncmFtcyBvciBkZW5zaXR5IHBsb3RzKiogZm9yIGJpa2UgdXNlIG92ZXIgdGhlIGZvbGxvd2luZyBkaXNjcmV0ZSB0aW1lIHBlcmlvZHMuIEZvciBlYWNoIHBsb3QsIHByb3ZpZGUgMi0zIHNlbnRlbmNlcyBkZXNjcmliaW5nIHlvdXIgb2JzZXJ2YXRpb25zLiAKCjEuIGRheSBvZiB0aGUgeWVhciAoMSB0byAzNjUpCjIuICBkYXkgb2YgdGhlIHdlZWsgKFN1bmRheSB0byBTYXR1cmRheSkKMy4gIGhvdXIgb2YgdGhlIGRheSAoMCB0byAyNCkKNC4gIG1pbnV0ZSBpbiB0aGUgaG91ciAoMCB0byA2MCkKCllvdSBjYW4gdXNlIFtGaWd1cmUgMTguM10oaHR0cHM6Ly9kdGthcGxhbi5naXRodWIuaW8vRGF0YUNvbXB1dGluZ0Vib29rL3Byb2plY3QtYmljeWNsZS1zaGFyaW5nLmh0bWwjZmlnOmJpa2VzLW92ZXItaG91cnMpIG9yIFtGaWd1cmUgMTguNF0oaHR0cHM6Ly9kdGthcGxhbi5naXRodWIuaW8vRGF0YUNvbXB1dGluZ0Vib29rL3Byb2plY3QtYmljeWNsZS1zaGFyaW5nLmh0bWwjZmlnOmJpa2UtaG91ci1jb3VudCkgYXMgZXhhbXBsZXMuCgoKIyMjIERheSBvZiBZZWFyCgpgYGB7cn0KIyMjIFlvdXIgQ29kZSBIZXJlCgpgYGAKCgpNeSBvYnNlcnZhdGlvbnMgaGVyZS4uLi4uIAoKCiMjIyBEYXkgb2YgV2VlawoKYGBge3J9CiMjIyBZb3VyIENvZGUgSGVyZQoKYGBgCgoKTXkgb2JzZXJ2YXRpb25zIGhlcmUuLi4uLiAKCgoKIyMjIEhvdXIgb2YgRGF5CgpgYGB7cn0KIyMjIFlvdXIgQ29kZSBIZXJlCgpgYGAKCgpNeSBvYnNlcnZhdGlvbnMgaGVyZS4uLi4uIAoKCgojIyMgTWludXRlIG9mIEhvdXIKCmBgYHtyfQojIyMgWW91ciBDb2RlIEhlcmUKCmBgYAoKCk15IG9ic2VydmF0aW9ucyBoZXJlLi4uLi4gCgoKIyMgUXVlc3Rpb24gMzogR3JvdXBpbmcKCkdyb3VwIHRoZSBiaWtlIHJlbnRhbHMgYnkgdGhyZWUgdmFyaWFibGVzOiBob3VyIG9mIHRoZSBkYXksIGRheSBvZiB0aGUgd2VlaywgYW5kIGNsaWVudCB0eXBlLiBGaW5kIHRoZSB0b3RhbCBudW1iZXIgb2YgZXZlbnRzIGluIGVhY2ggZ3JvdXBpbmcgYW5kIHBsb3QgdGhpcyBjb3VudCB2ZXJzdXMgaG91ci4gVXNlIHRoZSBncm91cCBhZXN0aGV0aWMgdG8gcmVwcmVzZW50IG9uZSBvZiB0aGUgb3RoZXIgdmFyaWFibGVzIGFuZCBmYWNldGluZyB0byByZXByZXNlbnQgdGhlIG90aGVyLiBDb21tZW50IG9uIGFueSBnZW5lcmFsIHRyZW5kcyB5b3Ugc2VlLgoKYGBge3J9CiMjIyBNeSBDb2RlIGhlcmUKCmBgYAoKTXkgY29tbWVudHMgaGVyZS4uLi4uCgoKIyMgUXVlc3Rpb24gNDogSG93IEZhcj8gCgoKT3VyIGdvYWwgaXMgdG8gZmluZCB0aGUgZGlzdGFuY2UgYmV0d2VlbiBlYWNoIHBhaXIgb2Ygc3RhdGlvbnMuIFlvdSBrbm93IHRoZSBwb3NpdGlvbiBmcm9tIHRoZSBsYXQgYW5kIGxvbmcgdmFyaWFibGVzIGluIGBTdGF0aW9uc2AuIFRoaXMgaXMgZW5vdWdoIGluZm9ybWF0aW9uIHRvIGZpbmQgdGhlIGRpc3RhbmNlLiBUaGUgY2FsY3VsYXRpb24gaGFzIGJlZW4gaW1wbGVtZW50ZWQgaW4gdGhlIGBoYXZlcnNpbmUoKWAgZnVuY3Rpb24uIFdlIGNhbiBpbXBvcnQgdGhlIGBoYXZlcnNpbmUoKWAgZnVuY3Rpb24gdXNpbmcgdGhlIGZvbGxvd2luZyBjb21tYW5kLiAKCmBgYHtyfQpzb3VyY2UoImh0dHBzOi8vbWRiZWNrbWFuLmdpdGh1Yi5pby9kY1N1cHBsZW1lbnQvUi9oYXZlcnNpbmUuUiIpCmBgYAoKCmBoYXZlcnNpbmUoKWAgaXMgYSB0cmFuc2Zvcm1hdGlvbiBmdW5jdGlvbi4gVG8gdXNlIGl0LCBjcmVhdGUgYSBkYXRhIHRhYmxlIHdoZXJlIGEgY2FzZSBpcyBhIHBhaXIgb2Ygc3RhdGlvbnMgYW5kIHRoZXJlIGFyZSB2YXJpYWJsZXMgZm9yIHRoZSBsYXRpdHVkZSBhbmQgbG9uZ2l0dWRlIG9mIHRoZSBzdGFydGluZyBzdGF0aW9uIGFuZCB0aGUgZW5kaW5nIHN0YXRpb24uIFRvIGRvIHRoaXMsIGpvaW4gdGhlIFN0YXRpb24gZGF0YSB0byBpdHNlbGYuIFRoZSBmb2xsb3dpbmcgc3RhdGVtZW50cyBzaG93IGhvdyB0byBjcmVhdGUgYXBwcm9wcmlhdGVseSBuYW1lZCB2YXJpYWJsZXMgZm9yIGpvaW5pbmcuCgoKYGBge3J9ClNpbXBsZSA8LQogIFN0YXRpb25zICU+JQogIHNlbGVjdChuYW1lLCBsYXQsIGxvbmcpICU+JQogIHJlbmFtZShzc3RhdGlvbiA9IG5hbWUpCgpTaW1wbGUyIDwtCiAgU2ltcGxlICU+JQogIHJlbmFtZShlc3RhdGlvbiA9IHNzdGF0aW9uLCBsYXQyID0gbGF0LCBsb25nMiA9IGxvbmcpCgpgYGAKCkxvb2sgYXQgdGhlIGBoZWFkKClgIG9mIGBTaW1wbGVgIGFuZCBgU2ltcGxlMmAgYW5kIG1ha2Ugc3VyZSB5b3UgdW5kZXJzdGFuZCBob3cgdGhleSBhcmUgcmVsYXRlZCB0byBgU3RhdGlvbnMuYAoKClRoZSBqb2luaW5nIG9mIGBTaW1wbGVgIGFuZCBgU2ltcGxlMmAgc2hvdWxkIG1hdGNoIGV2ZXJ5IHN0YXRpb24gdG8gZXZlcnkgb3RoZXIgc3RhdGlvbi4gU2luY2UgYSByaWRlIGNhbiBzdGFydCBhbmQgZW5kIGF0IHRoZSBzYW1lIHN0YXRpb24sIGl0IGFsc28gbWFrZXMgc2Vuc2UgdG8gbWF0Y2ggZWFjaCBzdGF0aW9uIHRvIGl0c2VsZi4gVGhpcyBzb3J0IG9mIG1hdGNoaW5nIGRvZXMgbm90IG1ha2UgdXNlIG9mIGFueSBtYXRjaGluZyB2YXJpYWJsZXM7IGV2ZXJ5dGhpbmcgaXMgbWF0Y2hlZCB0byBldmVyeXRoaW5nIGVsc2UuIFRoaXMgaXMgY2FsbGVkIGEgKipmdWxsIG91dGVyIGpvaW4qKi4gU2VlIExlY3R1cmUgTDA5IHRvIHJlYWQgbW9yZSBhYm91dCBqb2lucy4gTm90ZSwgd2UgY2FuIGFsc28gdXNlIHRoZSBgbWVyZ2UoKWAgZnVuY3Rpb24gZm9yIGZ1bGwgb3V0ZXIgam9pbnMuIFNlZSB0aGUgaGVscCBmaWxlIGZvciBtb3JlIGRldGFpbHMuICAKCgpXZSBwZXJmb3JtIHRoZSBmdWxsIG91dGVyIGpvaW4gYW5kIHRoZW4gdXNlIGBoYXZlcnNpbmUoKWAgdG8gY29tcHV0ZSB0aGUgZGlzdGFuY2UgYmV0d2VlbiBlYWNoIHBhaXIgb2Ygc3RhdGlvbnMuCgoKYGBge3J9CiNmdWxsIG91dGVyIGpvaW4KU3RhdGlvblBhaXJzIDwtIG1lcmdlKFNpbXBsZSwgU2ltcGxlMiwgYnkgPSBOVUxMKQoKI2NhbGN1bGF0aW5nIGRpc3RhbmNlcwpQYWlyRGlzdGFuY2VzIDwtCiAgU3RhdGlvblBhaXJzICU+JQogIG11dGF0ZShkaXN0YW5jZSA9IGhhdmVyc2luZShsYXQsIGxvbmcsIGxhdDIsIGxvbmcyKSkgJT4lCiAgc2VsZWN0KHNzdGF0aW9uLCBlc3RhdGlvbiwgZGlzdGFuY2UpCgpgYGAKCgpPbmNlIHlvdSBoYXZlIGBQYWlyRGlzdGFuY2VzYCwgeW91IGNhbiBqb2luIGl0IHdpdGggYFRyaXBzYCB0byBjYWxjdWxhdGUgdGhlIHN0YXJ0LXRvLWVuZCBkaXN0YW5jZSBvZiBlYWNoIHRyaXAuIEFuIGBpbm5lcl9qb2luKClgIGlzIGFwcHJvcHJpYXRlIGZvciBmaW5kaW5nIHRoZSBkaXN0YW5jZSBvZiBlYWNoIHJpZGUuCgpEaXNwbGF5IHRoZSBkaXN0cmlidXRpb24gb2YgdGhlIHJpZGUgZGlzdGFuY2VzIG9mIHRoZSByaWRlcy4gQ29tcGFyZSBpdCB0byB0aGUgZGlzdGFuY2VzIGJldHdlZW4gcGFpcnMgb2Ygc3RhdGlvbnMuIEFyZSB0aGV5IHNpbWlsYXI/IFdoeSBvciB3aHkgbm90PwoKT3VyIGdvYWwgaGVyZSBpcyB0byByZWNyZWF0ZSBbRmlndXJlIDE4LjVdKGh0dHBzOi8vZHRrYXBsYW4uZ2l0aHViLmlvL0RhdGFDb21wdXRpbmdFYm9vay9wcm9qZWN0LWJpY3ljbGUtc2hhcmluZy5odG1sI2ZpZzpiaWtlLWhvdXItY291bnQpLiBGb3IgdGhpcyBhc3NpZ25tZW50LCBpdCBpcyBzdWZmaWNpZW50IHRvIG1ha2UgZWFjaCBkZW5zaXR5IG9uIGl0cyBvd24gcGxvdC4gVGhlcmUgaXMgMSBwb2ludCBvZiBleHRyYSBjcmVkaXQgaWYgeW91IGNhbiBtYWtlIHRoZSB0d28gZGVuc2l0aWVzIG9uIHRoZSBzYW1lIHBsb3QuIAoKCgpgYGB7cn0KIyMjIE15IGNvZGUgaGVyZQoKYGBgCgoKCgojIyMjIEV4dHJhIENyZWRpdDogSm9pbmluZyBhbmQgVmFyaWFibGUgTmFtZXMgaW4gUgoKTG9vayBhdCB0aGUgdmFyaWFibGVzIGluIGBTdGF0aW9uc2AgYW5kIGBUcmlwc2AgYW5kIGV4cGxhaW4gd2h5IGBTaW1wbGVgIGFuZCBgU2ltcGxlMmAgd2VyZSBnaXZlbiBkaWZmZXJlbnQgdmFyaWFibGUgbmFtZXMgZm9yIHRoZSBzdGF0aW9uLiAKCk9wdGlvbmFsIEV4dHJhIGNyZWRpdCBhbnN3ZXIgaGVyZS4uLi4uCgoKCgoK</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIkEwNi0gZ2dwbG90Ig0KYXV0aG9yOiAiQXJuYXYgQmVkaSINCmRhdGU6ICI3LzIyLzIwMjQiDQpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sNCi0tLQ0KDQojIyBCaWN5Y2xlIFNoYXJpbmcNCg0KQ2FwaXRhbCBCaWtlU2hhcmUgaXMgYSBiaWN5Y2xlLXNoYXJpbmcgc3lzdGVtIGluIFdhc2hpbmd0b24sIEQuQy4gQXQgYW55IG9mIGFib3V0IDQwMCBzdGF0aW9ucywgYSByZWdpc3RlcmVkIHVzZXIgY2FuIHVubG9jayBhbmQgY2hlY2sgb3V0IGEgYmljeWNsZS4gQWZ0ZXIgdXNlLCB0aGUgYmlrZSBjYW4gYmUgcmV0dXJuZWQgdG8gdGhlIHNhbWUgc3RhdGlvbiBvciBhbnkgb2YgdGhlIG90aGVyIHN0YXRpb25zLg0KDQpTdWNoIHNoYXJpbmcgc3lzdGVtcyByZXF1aXJlIGNhcmVmdWwgbWFuYWdlbWVudC4gVGhlcmUgbmVlZCB0byBiZSBlbm91Z2ggYmlrZXMgYXQgZWFjaCBzdGF0aW9uIHRvIHNhdGlzZnkgdGhlIGRlbWFuZCwgYW5kIGVub3VnaCBlbXB0eSBkb2NrcyBhdCB0aGUgZGVzdGluYXRpb24gc3RhdGlvbiBzbyB0aGF0IHRoZSBiaWtlcyBjYW4gYmUgcmV0dXJuZWQuIEF0IGVhY2ggc3RhdGlvbiwgYmlrZXMgYXJlIGNoZWNrZWQgb3V0IGFuZCBhcmUgcmV0dXJuZWQgb3ZlciB0aGUgY291cnNlIG9mIHRoZSBkYXkuIEFuIGltYmFsYW5jZSBiZXR3ZWVuIGJpa2VzIGNoZWNrZWQgb3V0IGFuZCBiaWtlcyByZXR1cm5lZCBjYWxscyBmb3IgdGhlIHN5c3RlbSBhZG1pbmlzdHJhdGlvbiB0byB0cnVjayBiaWtlcyBmcm9tIG9uZSBzdGF0aW9uIHRvIGFub3RoZXIuIFRoaXMgaXMgZXhwZW5zaXZlLg0KDQpJbiBvcmRlciB0byBtYW5hZ2UgdGhlIHN5c3RlbSwgYW5kIHRvIHN1cHBvcnQgYSBzbWFydC1waG9uZSBhcHAgc28gdGhhdCB1c2VycyBjYW4gZmluZCBvdXQgd2hlbiBiaWtlcyBhcmUgYXZhaWxhYmxlLCBDYXBpdGFsIEJpa2VTaGFyZSBjb2xsZWN0cyByZWFsLXRpbWUgZGF0YSBvbiB3aGVuIGFuZCB3aGVyZSBlYWNoIGJpa2UgaXMgY2hlY2tlZCBvdXQgb3IgcmV0dXJuZWQsIGhvdyBtYW55IGJpa2VzIGFuZCBlbXB0eSBkb2NrcyB0aGVyZSBhcmUgYXQgZWFjaCBzdGF0aW9uLiBDYXBpdGFsIEJpa2VTaGFyZSBwdWJsaXNoZXMgdGhlIHN0YXRpb24tbGV2ZWwgaW5mb3JtYXRpb24gaW4gcmVhbCB0aW1lLiBUaGUgb3JnYW5pemF0aW9uIGFsc28gcHVibGlzaGVzLCBhdCB0aGUgZW5kIG9mIGVhY2ggcXVhcnRlciBvZiB0aGUgeWVhciwgdGhlIGhpc3RvcmljYWwgcmVjb3JkIG9mIGVhY2ggYmlrZSByZW50YWwgaW4gdGhhdCB0aW1lLg0KDQpZb3UgY2FuIGFjY2VzcyB0aGUgZGF0YSBmcm9tIHRoZSBDYXBpdGFsIEJpa2VzaGFyZSB3ZWIgc2l0ZS4gRG9pbmcgdGhpcyByZXF1aXJlcyBzb21lIHRyYW5zbGF0aW9uIGFuZCBjbGVhbmluZywgc2tpbGxzIHRoYXQgYXJlIGludHJvZHVjZWQgaW4gQ2hhcHRlciAxNi4gRm9yIHRoaXMgcHJvamVjdCwgaG93ZXZlciwgYWxyZWFkeSB0cmFuc2xhdGVkIGFuZCBjbGVhbmVkIGRhdGEgYXJlIHByb3ZpZGVkIGluIHRoZSBmb3JtIG9mIHR3byBkYXRhIHRhYmxlczoNCg0KLSBgU3RhdGlvbnNgIGdpdmluZyBpbmZvcm1hdGlvbiBhYm91dCBsb2NhdGlvbiBvZiBlYWNoIG9mIHRoZSBzdGF0aW9ucyBpbiB0aGUgc3lzdGVtLg0KLSBgVHJpcHNgIGlzIGEgcmFuZG9tIHN1YnNldCBvZiAxMCwwMDAgdHJpcHMgZnJvbSB0aGUgZnVsbCBxdWFydGVybHkgZGF0YSwgZ2l2aW5nIHRoZSByZW50YWwgaGlzdG9yeSBvdmVyIHRoZSBsYXN0IHF1YXJ0ZXIgb2YgMjAxNCAoUTQpLg0KDQoNCmBgYHtyfQ0KbGlicmFyeSh0aWR5dmVyc2UpDQoNCnN0YXRpb25fdXJsIDwtICJodHRwczovL21kYmVja21hbi5naXRodWIuaW8vZGNTdXBwbGVtZW50L2RhdGEvREMtU3RhdGlvbnMuY3N2Ig0KU3RhdGlvbnMgPC0gcmVhZHI6OnJlYWRfY3N2KHN0YXRpb25fdXJsKQ0KICAgIA0KdHJpcF91cmwgPC0gImh0dHBzOi8vbWRiZWNrbWFuLmdpdGh1Yi5pby9kY1N1cHBsZW1lbnQvZGF0YS9Ucmlwcy1IaXN0b3J5LURhdGEtMjAxNC1RNC1TbWFsbC5yZHMiDQpUcmlwcyA8LSByZWFkUkRTKGd6Y29uKHVybCh0cmlwX3VybCkpKQ0KYGBgDQoNCg0KSW4gdGhpcyBhY3Rpdml0eSwgeW914oCZbGwgd29yayB3aXRoIGp1c3QgYSBmZXcgdmFyaWFibGVzOg0KDQpGcm9tIGBTdGF0aW9uc2A6DQoNCi0gdGhlIGxhdGl0dWRlIChgbGF0YCkgYW5kIGxvbmdpdHVkZSAoYGxvbmdgKSBvZiB0aGUgYmljeWNsZSByZW50YWwgc3RhdGlvbg0KLSBgbmFtZWA6IHRoZSBzdGF0aW9u4oCZcyBuYW1lDQoNCg0KRnJvbSBUcmlwczogDQoNCi0gYHNzdGF0aW9uYDogdGhlIG5hbWUgb2YgdGhlIHN0YXRpb24gd2hlcmUgdGhlIGJpY3ljbGUgd2FzIGNoZWNrZWQgb3V0Lg0KLSBgZXN0YXRpb25gOiB0aGUgbmFtZSBvZiB0aGUgc3RhdGlvbiB0byB3aGljaCB0aGUgYmljeWNsZSB3YXMgcmV0dXJuZWQuDQotIGBjbGllbnRgOiBpbmRpY2F0ZXMgd2hldGhlciB0aGUgY3VzdG9tZXIgaXMgYSAicmVndWxhciIgdXNlciB3aG8gaGFzIHBhaWQgYSB5ZWFybHkgbWVtYmVyc2hpcCBmZWUsIG9yIGEgImNhc3VhbCIgdXNlciB3aG8gaGFzIHBhaWQgYSBmZWUgZm9yIGZpdmUtZGF5IG1lbWJlcnNoaXAuDQotIGBzZGF0ZWA6IHRoZSB0aW1lIGFuZCBkYXRlIG9mIGNoZWNrLW91dA0KLSBgZWRhdGVgOiB0aGUgdGltZSBhbmQgZGF0ZSBvZiByZXR1cm4NCg0KKE5vdGljZSB0aGF0IHRoZSBsb2NhdGlvbiBhbmQgdGltZSB2YXJpYWJsZXMgc3RhcnQgd2l0aCBhbiDigJxz4oCdIG9yIGFuIOKAnGXigJ0gdG8gaW5kaWNhdGUgd2hldGhlciB0aGUgdmFyaWFibGUgaXMgYWJvdXQgdGhlICoqcyoqdGFydCBvZiBhIHRyaXAgb3IgdGhlICoqZSoqbmQgb2YgYSB0cmlwLikNCg0KDQpUaW1lL2RhdGVzIGFyZSB0eXBpY2FsbHkgc3RvcmVkIGFzIGEgc3BlY2lhbCBraW5kIG9mIG51bWJlcjogYSAqKlBPU0lYKiogZGF0ZS4gDQoNCioqUE9TSVgqKiBkYXRlOiBBIHJlcHJlc2VudGF0aW9uIG9mIGRhdGUgYW5kIHRpbWUgb2YgZGF5IHRoYXQgZmFjaWxpdGF0ZXMgdXNpbmcgZGF0ZXMgaW4gdGhlIHNhbWUgd2F5IGFzIG51bWJlcnMsIGUuZy4gdG8gZmluZCB0aGUgdGltZSBlbGFwc2VkIGJldHdlZW4gdHdvIGRhdGVzLiBZb3UgY2FuIHVzZSBgc2RhdGVgIGFuZCBgZWRhdGVgIGluIHRoZSBzYW1lIHdheSB0aGF0IHlvdSB3b3VsZCB1c2UgYSBudW1iZXIuIEZvciBpbnN0YW5jZSwgdGhlIGZpZ3VyZSBiZWxvdyBzaG93cyB0aGUgZGlzdHJpYnV0aW9uIG9mIHRpbWVzIHRoYXQgYmlrZXMgd2VyZSBjaGVja2VkIG91dC4NCg0KYGBge3J9DQpUcmlwcyAlPiUNCiAgZ2dwbG90KGFlcyh4ID0gc2RhdGUpKSArDQogIGdlb21fZGVuc2l0eShmaWxsID0gImdyYXkiLCBjb2xvciA9IE5BKQ0KYGBgDQoNCg0KIyMgUXVlc3Rpb24gMTogSG93IExvbmc/ICANCg0KTWFrZSBhIGJveC1hbmQtd2hpc2tlciBQbG90LCBsaWtlIEZpZ3VyZSBbMTguMiBvZiB0aGUgUHJvamVjdDogQmljeWNsZSBTaGFyaW5nXShodHRwczovL2R0a2FwbGFuLmdpdGh1Yi5pby9EYXRhQ29tcHV0aW5nRWJvb2svcHJvamVjdC1iaWN5Y2xlLXNoYXJpbmcuaHRtbCNmaWc6Ym94LXdoaXNrZXItYmlrZSkgc2hvd2luZyB0aGUgZGlzdHJpYnV0aW9uIG9mIHRoZSBkdXJhdGlvbiBvZiByZW50YWwgZXZlbnRzLCBicm9rZW4gZG93biBieSB0aGUgY2xpZW50IHR5cGUuIFRoZSBkdXJhdGlvbiBvZiB0aGUgcmVudGFsIGNhbiBiZSBjYWxjdWxhdGVkIGFzIGBhcy5udW1lcmljKGVkYXRlIC0gc2RhdGUpYC4gVGhlIHVuaXRzIHdpbGwgYmUgaW4gZWl0aGVyIGhvdXJzLCBtaW51dGVzLCBvciBzZWNvbmRzLiBJdCBzaG91bGQgbm90IGJlIG11Y2ggdHJvdWJsZSBmb3IgeW91IHRvIGZpZ3VyZSBvdXQgd2hpY2ggb25lLg0KDQpXaGVuIHlvdSBtYWtlIHlvdXIgcGxvdCwgeW91IHdpbGwgbGlrZWx5IGZpbmQgdGhhdCB0aGUgYXhpcyByYW5nZSBpcyBiZWluZyBzZXQgYnkgYSBmZXcgb3V0bGllcnMuIFRoZXNlIG1heSBiZSBiaWtlcyB0aGF0IHdlcmUgZm9yZ290dGVuLiBBcnJhbmdlIHlvdXIgc2NhbGUgdG8gaWdub3JlIHRoZXNlIG91dGxpZXJzLCBvciBmaWx0ZXIgdGhlbSBvdXQuDQoNCg0KYGBge3J9DQojIyMgWW91ciBjb2RlIGhlcmUNCg0KDQpgYGANCg0KDQojIyBRdWVzdGlvbiAyOiBXaGVuIGFyZSBiaWtlcyB1c2VkPw0KDQpUaGUgYHNkYXRlYCB2YXJpYWJsZSBpbiBUcmlwcyBpbmRpY2F0ZXMgdGhlIGRhdGUgYW5kIHRpbWUgb2YgZGF5IHRoYXQgdGhlIGJpY3ljbGUgd2FzIGNoZWNrZWQgb3V0IG9mIHRoZSBwYXJraW5nIHN0YXRpb24uIGBzZGF0ZWAgaXMgc3RvcmVkIGFzIGEgc3BlY2lhbCB2YXJpYWJsZSB0eXBlIHRoYXQgaW5jbHVkZXMgZGV0YWlsZWQgaW5mb3JtYXRpb24gYWJvdXQgdGhlIGRhdGUgYW5kIHRpbWUuIA0KDQpPZnRlbiwgeW91IHdpbGwgd2FudCBkaXNjcmV0ZSBjb21wb25lbnRzIG9mIGEgZGF0ZSwgZm9yIGluc3RhbmNlOg0KDQoNCg0KfERhdGUgQ29tcG9uZW50ICAgICAgICAgICAgICAgICAgICAgICAgIHwJRnVuY3Rpb24gKGBsdWJyaWRhdGVgIHBhY2thZ2UpfA0KfC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLXwtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLXwNCnwgRGF5IG9mIHRoZSB5ZWFyICgxLTM2NSkgICAgICAgICAgICAgIAl8IGBsdWJyaWRhdGU6OnlkYXkoc2RhdGUpYAkgIHwgDQp8IERheSBvZiB0aGUgd2VlayAoU3VuZGF5IHRvIFNhdHVyZGF5KQl8IGBsdWJyaWRhdGU6OndkYXkoc2RhdGUpYAkgIHwgDQp8IEhvdXIgb2YgdGhlIGRheQkJICAgICAgICAgICAgICAgICAgICB8IGBsdWJyaWRhdGU6OmhvdXIoc2RhdGUpYAkgIHwgDQp8IE1pbnV0ZSBpbiB0aGUgaG91cgkgICAgICAgICAgICAgICAgICB8IGBsdWJyaWRhdGU6Om1pbnV0ZShzZGF0ZSlgCXwgDQoNCkNyZWF0ZSAqKmhpc3RvZ3JhbXMgb3IgZGVuc2l0eSBwbG90cyoqIGZvciBiaWtlIHVzZSBvdmVyIHRoZSBmb2xsb3dpbmcgZGlzY3JldGUgdGltZSBwZXJpb2RzLiBGb3IgZWFjaCBwbG90LCBwcm92aWRlIDItMyBzZW50ZW5jZXMgZGVzY3JpYmluZyB5b3VyIG9ic2VydmF0aW9ucy4gDQoNCjEuIGRheSBvZiB0aGUgeWVhciAoMSB0byAzNjUpDQoyLiAgZGF5IG9mIHRoZSB3ZWVrIChTdW5kYXkgdG8gU2F0dXJkYXkpDQozLiAgaG91ciBvZiB0aGUgZGF5ICgwIHRvIDI0KQ0KNC4gIG1pbnV0ZSBpbiB0aGUgaG91ciAoMCB0byA2MCkNCg0KWW91IGNhbiB1c2UgW0ZpZ3VyZSAxOC4zXShodHRwczovL2R0a2FwbGFuLmdpdGh1Yi5pby9EYXRhQ29tcHV0aW5nRWJvb2svcHJvamVjdC1iaWN5Y2xlLXNoYXJpbmcuaHRtbCNmaWc6YmlrZXMtb3Zlci1ob3Vycykgb3IgW0ZpZ3VyZSAxOC40XShodHRwczovL2R0a2FwbGFuLmdpdGh1Yi5pby9EYXRhQ29tcHV0aW5nRWJvb2svcHJvamVjdC1iaWN5Y2xlLXNoYXJpbmcuaHRtbCNmaWc6YmlrZS1ob3VyLWNvdW50KSBhcyBleGFtcGxlcy4NCg0KDQojIyMgRGF5IG9mIFllYXINCg0KYGBge3J9DQojIyMgWW91ciBDb2RlIEhlcmUNCg0KYGBgDQoNCg0KTXkgb2JzZXJ2YXRpb25zIGhlcmUuLi4uLiANCg0KDQojIyMgRGF5IG9mIFdlZWsNCg0KYGBge3J9DQojIyMgWW91ciBDb2RlIEhlcmUNCg0KYGBgDQoNCg0KTXkgb2JzZXJ2YXRpb25zIGhlcmUuLi4uLiANCg0KDQoNCiMjIyBIb3VyIG9mIERheQ0KDQpgYGB7cn0NCiMjIyBZb3VyIENvZGUgSGVyZQ0KDQpgYGANCg0KDQpNeSBvYnNlcnZhdGlvbnMgaGVyZS4uLi4uIA0KDQoNCg0KIyMjIE1pbnV0ZSBvZiBIb3VyDQoNCmBgYHtyfQ0KIyMjIFlvdXIgQ29kZSBIZXJlDQoNCmBgYA0KDQoNCk15IG9ic2VydmF0aW9ucyBoZXJlLi4uLi4gDQoNCg0KIyMgUXVlc3Rpb24gMzogR3JvdXBpbmcNCg0KR3JvdXAgdGhlIGJpa2UgcmVudGFscyBieSB0aHJlZSB2YXJpYWJsZXM6IGhvdXIgb2YgdGhlIGRheSwgZGF5IG9mIHRoZSB3ZWVrLCBhbmQgY2xpZW50IHR5cGUuIEZpbmQgdGhlIHRvdGFsIG51bWJlciBvZiBldmVudHMgaW4gZWFjaCBncm91cGluZyBhbmQgcGxvdCB0aGlzIGNvdW50IHZlcnN1cyBob3VyLiBVc2UgdGhlIGdyb3VwIGFlc3RoZXRpYyB0byByZXByZXNlbnQgb25lIG9mIHRoZSBvdGhlciB2YXJpYWJsZXMgYW5kIGZhY2V0aW5nIHRvIHJlcHJlc2VudCB0aGUgb3RoZXIuIENvbW1lbnQgb24gYW55IGdlbmVyYWwgdHJlbmRzIHlvdSBzZWUuDQoNCmBgYHtyfQ0KIyMjIE15IENvZGUgaGVyZQ0KDQpgYGANCg0KTXkgY29tbWVudHMgaGVyZS4uLi4uDQoNCg0KIyMgUXVlc3Rpb24gNDogSG93IEZhcj8gDQoNCg0KT3VyIGdvYWwgaXMgdG8gZmluZCB0aGUgZGlzdGFuY2UgYmV0d2VlbiBlYWNoIHBhaXIgb2Ygc3RhdGlvbnMuIFlvdSBrbm93IHRoZSBwb3NpdGlvbiBmcm9tIHRoZSBsYXQgYW5kIGxvbmcgdmFyaWFibGVzIGluIGBTdGF0aW9uc2AuIFRoaXMgaXMgZW5vdWdoIGluZm9ybWF0aW9uIHRvIGZpbmQgdGhlIGRpc3RhbmNlLiBUaGUgY2FsY3VsYXRpb24gaGFzIGJlZW4gaW1wbGVtZW50ZWQgaW4gdGhlIGBoYXZlcnNpbmUoKWAgZnVuY3Rpb24uIFdlIGNhbiBpbXBvcnQgdGhlIGBoYXZlcnNpbmUoKWAgZnVuY3Rpb24gdXNpbmcgdGhlIGZvbGxvd2luZyBjb21tYW5kLiANCg0KYGBge3J9DQpzb3VyY2UoImh0dHBzOi8vbWRiZWNrbWFuLmdpdGh1Yi5pby9kY1N1cHBsZW1lbnQvUi9oYXZlcnNpbmUuUiIpDQpgYGANCg0KDQpgaGF2ZXJzaW5lKClgIGlzIGEgdHJhbnNmb3JtYXRpb24gZnVuY3Rpb24uIFRvIHVzZSBpdCwgY3JlYXRlIGEgZGF0YSB0YWJsZSB3aGVyZSBhIGNhc2UgaXMgYSBwYWlyIG9mIHN0YXRpb25zIGFuZCB0aGVyZSBhcmUgdmFyaWFibGVzIGZvciB0aGUgbGF0aXR1ZGUgYW5kIGxvbmdpdHVkZSBvZiB0aGUgc3RhcnRpbmcgc3RhdGlvbiBhbmQgdGhlIGVuZGluZyBzdGF0aW9uLiBUbyBkbyB0aGlzLCBqb2luIHRoZSBTdGF0aW9uIGRhdGEgdG8gaXRzZWxmLiBUaGUgZm9sbG93aW5nIHN0YXRlbWVudHMgc2hvdyBob3cgdG8gY3JlYXRlIGFwcHJvcHJpYXRlbHkgbmFtZWQgdmFyaWFibGVzIGZvciBqb2luaW5nLg0KDQoNCmBgYHtyfQ0KU2ltcGxlIDwtDQogIFN0YXRpb25zICU+JQ0KICBzZWxlY3QobmFtZSwgbGF0LCBsb25nKSAlPiUNCiAgcmVuYW1lKHNzdGF0aW9uID0gbmFtZSkNCg0KU2ltcGxlMiA8LQ0KICBTaW1wbGUgJT4lDQogIHJlbmFtZShlc3RhdGlvbiA9IHNzdGF0aW9uLCBsYXQyID0gbGF0LCBsb25nMiA9IGxvbmcpDQoNCmBgYA0KDQpMb29rIGF0IHRoZSBgaGVhZCgpYCBvZiBgU2ltcGxlYCBhbmQgYFNpbXBsZTJgIGFuZCBtYWtlIHN1cmUgeW91IHVuZGVyc3RhbmQgaG93IHRoZXkgYXJlIHJlbGF0ZWQgdG8gYFN0YXRpb25zLmANCg0KDQpUaGUgam9pbmluZyBvZiBgU2ltcGxlYCBhbmQgYFNpbXBsZTJgIHNob3VsZCBtYXRjaCBldmVyeSBzdGF0aW9uIHRvIGV2ZXJ5IG90aGVyIHN0YXRpb24uIFNpbmNlIGEgcmlkZSBjYW4gc3RhcnQgYW5kIGVuZCBhdCB0aGUgc2FtZSBzdGF0aW9uLCBpdCBhbHNvIG1ha2VzIHNlbnNlIHRvIG1hdGNoIGVhY2ggc3RhdGlvbiB0byBpdHNlbGYuIFRoaXMgc29ydCBvZiBtYXRjaGluZyBkb2VzIG5vdCBtYWtlIHVzZSBvZiBhbnkgbWF0Y2hpbmcgdmFyaWFibGVzOyBldmVyeXRoaW5nIGlzIG1hdGNoZWQgdG8gZXZlcnl0aGluZyBlbHNlLiBUaGlzIGlzIGNhbGxlZCBhICoqZnVsbCBvdXRlciBqb2luKiouIFNlZSBMZWN0dXJlIEwwOSB0byByZWFkIG1vcmUgYWJvdXQgam9pbnMuIE5vdGUsIHdlIGNhbiBhbHNvIHVzZSB0aGUgYG1lcmdlKClgIGZ1bmN0aW9uIGZvciBmdWxsIG91dGVyIGpvaW5zLiBTZWUgdGhlIGhlbHAgZmlsZSBmb3IgbW9yZSBkZXRhaWxzLiAgDQoNCg0KV2UgcGVyZm9ybSB0aGUgZnVsbCBvdXRlciBqb2luIGFuZCB0aGVuIHVzZSBgaGF2ZXJzaW5lKClgIHRvIGNvbXB1dGUgdGhlIGRpc3RhbmNlIGJldHdlZW4gZWFjaCBwYWlyIG9mIHN0YXRpb25zLg0KDQoNCmBgYHtyfQ0KI2Z1bGwgb3V0ZXIgam9pbg0KU3RhdGlvblBhaXJzIDwtIG1lcmdlKFNpbXBsZSwgU2ltcGxlMiwgYnkgPSBOVUxMKQ0KDQojY2FsY3VsYXRpbmcgZGlzdGFuY2VzDQpQYWlyRGlzdGFuY2VzIDwtDQogIFN0YXRpb25QYWlycyAlPiUNCiAgbXV0YXRlKGRpc3RhbmNlID0gaGF2ZXJzaW5lKGxhdCwgbG9uZywgbGF0MiwgbG9uZzIpKSAlPiUNCiAgc2VsZWN0KHNzdGF0aW9uLCBlc3RhdGlvbiwgZGlzdGFuY2UpDQoNCmBgYA0KDQoNCk9uY2UgeW91IGhhdmUgYFBhaXJEaXN0YW5jZXNgLCB5b3UgY2FuIGpvaW4gaXQgd2l0aCBgVHJpcHNgIHRvIGNhbGN1bGF0ZSB0aGUgc3RhcnQtdG8tZW5kIGRpc3RhbmNlIG9mIGVhY2ggdHJpcC4gQW4gYGlubmVyX2pvaW4oKWAgaXMgYXBwcm9wcmlhdGUgZm9yIGZpbmRpbmcgdGhlIGRpc3RhbmNlIG9mIGVhY2ggcmlkZS4NCg0KRGlzcGxheSB0aGUgZGlzdHJpYnV0aW9uIG9mIHRoZSByaWRlIGRpc3RhbmNlcyBvZiB0aGUgcmlkZXMuIENvbXBhcmUgaXQgdG8gdGhlIGRpc3RhbmNlcyBiZXR3ZWVuIHBhaXJzIG9mIHN0YXRpb25zLiBBcmUgdGhleSBzaW1pbGFyPyBXaHkgb3Igd2h5IG5vdD8NCg0KT3VyIGdvYWwgaGVyZSBpcyB0byByZWNyZWF0ZSBbRmlndXJlIDE4LjVdKGh0dHBzOi8vZHRrYXBsYW4uZ2l0aHViLmlvL0RhdGFDb21wdXRpbmdFYm9vay9wcm9qZWN0LWJpY3ljbGUtc2hhcmluZy5odG1sI2ZpZzpiaWtlLWhvdXItY291bnQpLiBGb3IgdGhpcyBhc3NpZ25tZW50LCBpdCBpcyBzdWZmaWNpZW50IHRvIG1ha2UgZWFjaCBkZW5zaXR5IG9uIGl0cyBvd24gcGxvdC4gVGhlcmUgaXMgMSBwb2ludCBvZiBleHRyYSBjcmVkaXQgaWYgeW91IGNhbiBtYWtlIHRoZSB0d28gZGVuc2l0aWVzIG9uIHRoZSBzYW1lIHBsb3QuIA0KDQoNCg0KYGBge3J9DQojIyMgTXkgY29kZSBoZXJlDQoNCmBgYA0KDQoNCg0KDQojIyMjIEV4dHJhIENyZWRpdDogSm9pbmluZyBhbmQgVmFyaWFibGUgTmFtZXMgaW4gUg0KDQpMb29rIGF0IHRoZSB2YXJpYWJsZXMgaW4gYFN0YXRpb25zYCBhbmQgYFRyaXBzYCBhbmQgZXhwbGFpbiB3aHkgYFNpbXBsZWAgYW5kIGBTaW1wbGUyYCB3ZXJlIGdpdmVuIGRpZmZlcmVudCB2YXJpYWJsZSBuYW1lcyBmb3IgdGhlIHN0YXRpb24uIA0KDQpPcHRpb25hbCBFeHRyYSBjcmVkaXQgYW5zd2VyIGhlcmUuLi4uLg0KDQoNCg0KDQoNCg==</div>
 
 
 

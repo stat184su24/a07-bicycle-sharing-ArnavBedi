@@ -1,7 +1,7 @@
 ---
 title: "A06- ggplot"
-author: "YOUR NAME"
-date: "DATE"
+author: "Arnav Bedi"
+date: "7/22/2024"
 output: html_notebook
 ---
 
@@ -62,7 +62,7 @@ Trips %>%
 
 ## Question 1: How Long?  
 
-Make a box-and-whisker plot, like Figure [18.2 of the Project: Bicycle Sharing](https://dtkaplan.github.io/DataComputingEbook/project-bicycle-sharing.html#fig:box-whisker-bike) showing the distribution of the duration of rental events, broken down by the client type. The duration of the rental can be calculated as `as.numeric(edate - sdate)`. The units will be in either hours, minutes, or seconds. It should not be much trouble for you to figure out which one.
+Make a box-and-whisker Plot, like Figure [18.2 of the Project: Bicycle Sharing](https://dtkaplan.github.io/DataComputingEbook/project-bicycle-sharing.html#fig:box-whisker-bike) showing the distribution of the duration of rental events, broken down by the client type. The duration of the rental can be calculated as `as.numeric(edate - sdate)`. The units will be in either hours, minutes, or seconds. It should not be much trouble for you to figure out which one.
 
 When you make your plot, you will likely find that the axis range is being set by a few outliers. These may be bikes that were forgotten. Arrange your scale to ignore these outliers, or filter them out.
 
