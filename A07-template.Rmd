@@ -68,7 +68,28 @@ When you make your plot, you will likely find that the axis range is being set b
 
 
 ```{r}
-### Your code here
+# Converting sdate and edate to POSIXct format if not already done
+Trips$sdate <- as.POSIXct(Trips$sdate, format="%Y-%m-%d %H:%M:%S")
+Trips$edate <- as.POSIXct(Trips$edate, format="%Y-%m-%d %H:%M:%S")
+
+# Calculating the duration in minutes
+Trips <- Trips %>%
+  mutate(duration = as.numeric(difftime(edate, sdate, units = "mins")))
+
+# Calculating the 95th percentile to filter out long duration outliers
+percentile_95 <- quantile(Trips$duration, 0.95)
+
+# Filtering out trips longer than the 95th percentile
+Trips_filtered <- Trips %>%
+  filter(duration <= percentile_95)
+
+# Creating the box-and-whisker plot
+ggplot(Trips_filtered, aes(x = client, y = duration, fill = client)) +
+  geom_boxplot() +
+  labs(title = "Distribution of Rental Durations by Client Type",
+       x = "Client Type",
+       y = "Duration (minutes)") +
+  theme_minimal()
 
 
 ```
@@ -98,51 +119,80 @@ Create **histograms or density plots** for bike use over the following discrete 
 
 You can use [Figure 18.3](https://dtkaplan.github.io/DataComputingEbook/project-bicycle-sharing.html#fig:bikes-over-hours) or [Figure 18.4](https://dtkaplan.github.io/DataComputingEbook/project-bicycle-sharing.html#fig:bike-hour-count) as examples.
 
+```{r}
+# Extracting date components
+Trips <- Trips %>%
+  mutate(day_of_year = yday(sdate),
+         day_of_week = wday(sdate, label = TRUE),
+         hour_of_day = hour(sdate),
+         minute_in_hour = minute(sdate))
+```
 
 ### Day of Year
-
 ```{r}
-### Your Code Here
+# Histogram for Day of the Year
+ggplot(Trips, aes(x = day_of_year)) +
+  geom_histogram(binwidth = 1, fill = "pink", color = "black") +
+  labs(title = "Bike Check-outs by Day of the Year",
+       x = "Day of the Year",
+       y = "Count") +
+  theme_minimal()
 
 ```
 
 
-My observations here..... 
+My observations here are that the graph shows that the maximum amount of bike checkouts happen around the 275th day of the year and gradually decreases 
 
 
 ### Day of Week
 
 ```{r}
-### Your Code Here
+# Histogram for Day of the Week
+ggplot(Trips, aes(x = day_of_week)) +
+  geom_histogram(stat = "count", fill = "purple", color = "black") +
+  labs(title = "Bike Check-outs by Day of the Week",
+       x = "Day of the Week",
+       y = "Count") +
+  theme_minimal()
 
 ```
 
 
-My observations here..... 
+My observations here are that there is not much difference between the amount of checkouts on the days of the week with the maximum being on Thursdays and Fridays.  
 
 
 
 ### Hour of Day
 
 ```{r}
-### Your Code Here
+ggplot(Trips, aes(x = hour_of_day)) +
+  geom_histogram(binwidth = 1, fill = "red", color = "black") +
+  labs(title = "Bike Check-outs by Hour of the Day",
+       x = "Hour of the Day",
+       y = "Count") +
+  theme_minimal()
 
 ```
 
 
-My observations here..... 
+My observations here that there is a pretty significant difference in the checkouts by hour of the day where the highest being around 8am followed by 5pm, and the lowest being between 2am to 5am. 
 
 
 
 ### Minute of Hour
 
 ```{r}
-### Your Code Here
+ggplot(Trips, aes(x = minute_in_hour)) +
+  geom_histogram(binwidth = 1, fill = "orange", color = "black") +
+  labs(title = "Bike Check-outs by Minute in the Hour",
+       x = "Minute in the Hour",
+       y = "Count") +
+  theme_minimal()
 
 ```
 
 
-My observations here..... 
+My observations here are that there is not much difference in which minute of the hour the checkouts happen with the average being around 150 to 200 bikes per minute in an hour 
 
 
 ## Question 3: Grouping
